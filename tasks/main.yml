@@ -1,0 +1,33 @@
+---
+- name: Gather facts
+  action: ec2_facts
+  
+- name: Create 'app' group
+  sudo: yes
+  group: name=app system=yes
+
+- name: Create 'app' user
+  sudo: yes
+  user: name=app system=yes group=app shell=/usr/sbin/nologin home=/opt/apps createhome=yes
+
+- name: "Installing app {{app.name}}" 
+  appmgr_app: upgrade={{upgrade}} coordinates={{app_coordinates}} name={{app.name}} maven_repository={{maven_repository}}
+  sudo: yes
+  notify:
+    - "restart app {{app.name}}"
+    - "notify stackdriver"
+
+- name: "Configuring app {{app.name}}"
+  appmgr_config: name={{app.name}} key={{item.name}} value={{item.value}}
+  with_items: app.config
+  sudo: yes
+
+- name: "Handling environment variables"
+  template: src=environment.j2 dest=/opt/apps/{{app.name}}/environment
+  sudo: yes
+
+- name: "Install app :: Add monit scripts"
+  template: src=monit/conf.d/app.j2 dest=/etc/monit/conf.d/{{app.name}} owner=root group=root mode=0700
+  sudo: yes
+  notify:
+    - restart monit

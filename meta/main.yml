@@ -1,0 +1,4 @@
+---
+dependencies:
+  - {role: Schibsted.monit}
+  - {role: Schibsted.appmgr}

@@ -1,0 +1,3 @@
+---
+upgrade: true
+app_coordinates: "{{app.groupId}}:{{app.artifact}}:{{app.version}}"

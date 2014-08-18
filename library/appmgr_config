@@ -1,0 +1,82 @@
+#!/usr/bin/python
+
+DOCUMENTATION = '''
+---
+module: appmgr_config
+short_description: Set appmgr configuration for an application
+description:
+     - The M(appmgr_config) module set a configuration for an specific app
+options:
+  name:
+    description:
+      - Application name
+    required: true
+    default: null
+  key:
+    description:
+      - Configuration key, (.) dot separated
+    required: true
+  value:
+    description:
+      - Configuration Value
+    required: true
+
+requirements: [ "appmgr" ]
+author: Jordi Arnavat
+'''
+
+EXAMPLES = '''
+- appmgr_config: name=app key=env.name value=val
+'''
+
+def run_command(cmd, module, cwd=None):
+  if cwd:
+    os.chdir(cwd)
+  return module.run_command(cmd)
+
+
+def main():
+  module = AnsibleModule(
+      argument_spec = dict(
+        name   = dict(required=True),
+        base   = dict(required=False,default="/opt/apps"),
+        user   = dict(required=False,default="app"),
+        group  = dict(required=False,default="app"),
+        key    = dict(required=False),
+      	value  = dict(default=True)
+      )
+  )
+
+  # Check if appsh is installed:
+  run_command("app", module)
+
+  app_name = module.params["name"]
+  app_path = os.path.join(module.params["base"], app_name)
+  user  = module.params["user"]
+  group  = module.params["group"]
+  key = module.params["key"]
+  value  = module.params["value"]
+
+  # Check for installed app
+  app_exists = os.path.exists(os.path.join(app_path, ".app"))
+
+  if not app_exists:
+
+    module.fail_json(
+      msg="Unable to find application %s. Please make sure that it is installed before configuring it"%app_name
+    )
+   
+  rc, out, err = run_command("app conf set %s %s"%(key,value), module, cwd=app_path)
+  
+  # Fix ownership of application
+  run_command("chown -R %s:%s %s"%(user,group,app_path), module)
+
+  if rc == 0:
+    module.exit_json(changed=True)
+  else:
+    module.fail_json(
+      msg="Unsuccessful, it was not posible to set this configuration. The name parameter should look like 'section.name'"
+    )
+ 
+from ansible.module_utils.basic import *
+main()

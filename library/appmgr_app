@@ -1,0 +1,179 @@
+#!/usr/bin/python
+## http://trygvis.io/projects/app.sh/app.html
+import os
+
+DOCUMENTATION = '''
+---
+module: appmgr_app
+version_added: "None"
+short_description: Deploy application using appmgr
+description:
+     - The M(appmgr_app) module deploy and application hosted in a maven repository
+options:
+  name:
+    description:
+      - Application name
+    required: true
+    default: null
+  enabled:
+    description:
+      - Enable application installed
+    required: false
+    choices: [ "true", "false" ]
+    default: true
+  upgrade:
+    description:
+      - Upgrade application
+    required: true
+    default: true
+  coordinates:
+    description:
+      - Maven coordinates for the application to install
+    required: true
+    default: null
+  maven_repository:
+    description:
+      - Maven repository which hosts app.sh application packages
+    required: true
+    default: http://repo1.maven.org
+
+requirements: [ "appmgr" ]
+author: Jordi Arnavat
+'''
+
+EXAMPLES = '''
+- appmgr_app: name=app enabled=false upgrade=false coordinates=com.schibsted.app:app:appsh:1.1 maven_repository=http://repo1.maven.org
+'''
+
+class Artifact(object):
+    def __init__(self, group_id, artifact_id, version, classifier=None, extension=None):
+        if not group_id:
+            raise ValueError("group_id must be set")
+        if not artifact_id:
+            raise ValueError("artifact_id must be set")
+
+        self.group_id = group_id
+        self.artifact_id = artifact_id
+        self.version = version
+        self.classifier = classifier
+        if not extension:
+            self.extension = "jar"
+        else:
+            self.extension = extension
+
+    def is_snapshot(self):
+        return self.version.endswith("SNAPSHOT")
+
+    def __str__(self):
+        if self.classifier:
+            return "%s:%s:%s:%s:%s" % (self.group_id, self.artifact_id, self.extension, self.classifier, self.version)
+        elif self.extension != "jar":
+            return "%s:%s:%s:%s" % (self.group_id, self.artifact_id, self.extension, self.version)
+        else:
+            return "%s:%s:%s" % (self.group_id, self.artifact_id, self.version)
+
+    @staticmethod
+    def parse(input):
+        parts = input.split(":")
+        if len(parts) >= 3:
+            g = parts[0]
+            a = parts[1]
+            v = parts[len(parts) - 1]
+            t = None
+            c = None
+            if len(parts) == 4:
+                t = parts[2]
+            if len(parts) == 5:
+                t = parts[2]
+                c = parts[3]
+            return Artifact(g, a, v, c, t)
+        else:
+            return None
+
+def run_command(cmd, module, cwd=None):
+  if cwd:
+    os.chdir(cwd)
+  return module.run_command(cmd)
+
+def get_config_value(name, module, app_path):
+  rc, out, err = run_command("app conf get %s" % name, module, cwd=app_path)
+  if (rc == 0):
+    return out[0:-1]
+  else:
+    raise ValueError(err)
+
+def main():
+  module = AnsibleModule(
+      argument_spec = dict(
+        name         = dict(required=True),
+        base         = dict(required=False,default="/opt/apps"),
+        enabled      = dict(required=False,default="true", choices=["true","false"]),
+        user             = dict(required=False,default="app"),
+        group            = dict(required=False,default="app"),
+      	upgrade   	  	 = dict(default=True),
+        coordinates  = dict(required=True),
+        maven_repository = dict(required=False, default="http://repo1.maven.org")
+      )
+  )
+
+  # Check if appsh is installed:
+  run_command("app", module)
+
+  app_name = module.params["name"]
+  app_enabled = module.params["enabled"]
+  user  = module.params["user"]
+  group  = module.params["group"]
+  upgrade  = module.params["upgrade"]
+  maven_repository = module.params["maven_repository"]
+  artifact = Artifact.parse(module.params["coordinates"])
+  app_path = os.path.join(module.params["base"],app_name)
+
+  if not artifact:
+    module.fail_json(
+      msg="Error parsing app_coordinates: %s"%module.params["app_coordinates"]
+    )
+  
+  # Check for installed app
+  app_exists = os.path.exists(os.path.join(app_path, ".app"))
+
+  if not app_exists:
+    # Install app
+    rc, out, err = run_command("app init -d %s maven -r %s %s"%(app_path,maven_repository,artifact), module)
+
+    if err.find("Unable to download") != -1:
+      module.fail_json(
+        msg="Unable to download %s [%s], from maven repository: %s"%(app_name, artifact ,maven_repository)
+      )
+
+    if out.find("fatal:") != -1:
+        module.fail_json(
+            msg=out
+        )
+      
+  # Set enabled status
+  run_command("app conf set app.enabled %s"%app_enabled.lower(), module, cwd=app_path)
+
+  # Get installed version
+  version = get_config_value("app.version", module, app_path)
+  maven_repo = get_config_value("maven.repo", module, app_path)
+
+  if (maven_repo != maven_repository):
+    # Set maven repo
+    run_command("app conf set maven.repo %s" % maven_repository, module, cwd=app_path)
+
+  if version != artifact.version:
+    # Set version
+    run_command("app conf set app.version %s" % artifact.version, module, cwd=app_path)
+
+  if app_exists and upgrade:
+    # Upgrade app
+    run_command("app upgrade", module, cwd=app_path)
+
+  # Fix ownership of application
+  run_command("chown -R %s:%s %s"%(user,group,app_path), module)
+
+  module.exit_json(changed=True)
+
+ 
+from ansible.module_utils.basic import *
+main()
