@@ -1,0 +1,2 @@
+Schibsted.appmgr-app
+====================
