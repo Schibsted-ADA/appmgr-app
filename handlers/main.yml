@@ -2,8 +2,3 @@
 - name: "restart app {{app.name}}" 
   command: "monit restart {{app.name}}"
   sudo: yes
-
-- name: "notify stackdriver"
-  stackdriver: key={{ stackdriver_api_key }} event=deploy deployed_to={{inventory_file}} deployed_by={{ansible_ssh_user}} repository={{app.name}} revision_id={{app_coordinates}} instance_id={{ ansible_ec2_instance_id }}
-
-

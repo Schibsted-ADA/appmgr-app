@@ -1,0 +1,16 @@
+---
+host: all
+roles:
+  - {
+      role: "Schibsted.appmgr-app",
+      app: {
+        name: "foobar",
+        groupId: "com.example",
+        artifactId: "example",
+        classifier: "appmgr",
+        version: "1.0",
+        enabled: true,
+        config: [],
+        environment: []
+      }
+   }

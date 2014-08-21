@@ -1,3 +1,4 @@
 ---
 upgrade: true
-app_coordinates: "{{app.groupId}}:{{app.artifact}}:{{app.version}}"
+app_coordinates: "{{app.groupId}}:{{app.artifactId}}:{{app.classifier | default('appmgr')}}:{{app.version}}"
+ec2_enabled: false

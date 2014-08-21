@@ -1,7 +1,4 @@
 ---
-- name: Gather facts
-  action: ec2_facts
-  
 - name: Create 'app' group
   sudo: yes
   group: name=app system=yes
@@ -15,7 +12,6 @@
   sudo: yes
   notify:
     - "restart app {{app.name}}"
-    - "notify stackdriver"
 
 - name: "Configuring app {{app.name}}"
   appmgr_config: name={{app.name}} key={{item.name}} value={{item.value}}
@@ -31,3 +27,5 @@
   sudo: yes
   notify:
     - restart monit
+
+- include: ec2.yml
