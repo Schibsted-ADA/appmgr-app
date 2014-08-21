@@ -145,10 +145,11 @@ def main():
         msg="Unable to download %s [%s], from maven repository: %s"%(app_name, artifact ,maven_repository)
       )
 
-    if out.find("fatal:") != -1:
-        module.fail_json(
-            msg=out
-        )
+    if out.find("fatal:") != -1 or out.find("error:") != -1:
+        module.fail_json(msg=out)
+
+    if err.find("fatal:") != -1 or err.find("error:") != -1:
+      module.fail_json(msg=err)
       
   # Set enabled status
   run_command("app conf set app.enabled %s"%app_enabled.lower(), module, cwd=app_path)
@@ -167,7 +168,13 @@ def main():
 
   if app_exists and upgrade:
     # Upgrade app
-    run_command("app upgrade", module, cwd=app_path)
+    rc, out, err = run_command("app upgrade", module, cwd=app_path)
+
+    if out.find("fatal:") != -1 or out.find("error:") != -1:
+      module.fail_json(msg=out)
+
+    if err.find("fatal:") != -1 or err.find("error:") != -1:
+      module.fail_json(msg=err)
 
   # Fix ownership of application
   run_command("chown -R %s:%s %s"%(user,group,app_path), module)
