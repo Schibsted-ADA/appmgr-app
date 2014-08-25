@@ -1,8 +1,8 @@
 check process {{app.name}} with pidfile /opt/apps/{{app.name}}/.app/pid
   start program "/bin/bash -c 'sleep 5 && cd /opt/apps/{{app.name}} && /usr/local/bin/app start'"
-    as uid {{app.user | default("app")}} and gid {{app.group | default("app")}}
+    as uid {{app_user}} and gid {{app_group}}
   stop program "/bin/bash -c 'cd /opt/apps/{{app.name}} && /usr/local/bin/app stop'"
-    as uid {{app.user | default("app")}} and gid {{app.group | default("app")}}
+    as uid {{app_user}} and gid {{app_group}}
 
 if 5 restarts within 5 cycles then timeout
 

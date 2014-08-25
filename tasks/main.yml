@@ -1,15 +1,16 @@
 ---
-- name: Create 'app' group
+- name: "Create '{{app_user}}' group"
   sudo: yes
-  group: name=app system=yes
+  group: name={{app_user}} system=yes
 
-- name: Create 'app' user
+- name: "Create '{{app_user}}' user"
   sudo: yes
-  user: name=app system=yes group=app shell=/usr/sbin/nologin home=/opt/apps createhome=yes
+  user: name={{app_user}} system=yes group=app shell=/usr/sbin/nologin home={{app_home}} createhome=yes
 
 - name: "Installing app {{app.name}}" 
-  appmgr_app: upgrade={{upgrade}} coordinates={{app_coordinates}} name={{app.name}} maven_repository={{maven_repository}}
+  appmgr_app: upgrade={{upgrade}} coordinates={{app_coordinates}} name={{app.name}} maven_repository={{maven_repository}} user={{app_user}} group={{app_group}} base={{app_home}}
   sudo: yes
+  sudo_user: "{{app_user}}"
   notify:
     - "restart app {{app.name}}"
 
@@ -25,7 +26,9 @@
 - name: "Install app :: Add monit scripts"
   template: src=monit/conf.d/app.j2 dest=/etc/monit/conf.d/{{app.name}} owner=root group=root mode=0700
   sudo: yes
-  notify:
-    - restart monit
+
+- name: "Restart monit"
+  service: name=monit state=restarted
+  sudo: yes
 
 - include: ec2.yml

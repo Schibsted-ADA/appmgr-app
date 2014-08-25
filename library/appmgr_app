@@ -1,5 +1,5 @@
 #!/usr/bin/python
-## http://trygvis.io/projects/app.sh/app.html
+## http://appmgr.github.io/app.html
 import os
 
 DOCUMENTATION = '''
@@ -56,8 +56,10 @@ class Artifact(object):
         self.artifact_id = artifact_id
         self.version = version
         self.classifier = classifier
+        if classifier == "":
+          self.classifier = None
         if not extension:
-            self.extension = "jar"
+            self.extension = "zip"
         else:
             self.extension = extension
 
@@ -67,7 +69,7 @@ class Artifact(object):
     def __str__(self):
         if self.classifier:
             return "%s:%s:%s:%s:%s" % (self.group_id, self.artifact_id, self.extension, self.classifier, self.version)
-        elif self.extension != "jar":
+        elif self.extension != "zip":
             return "%s:%s:%s:%s" % (self.group_id, self.artifact_id, self.extension, self.version)
         else:
             return "%s:%s:%s" % (self.group_id, self.artifact_id, self.version)
@@ -78,7 +80,7 @@ class Artifact(object):
         if len(parts) >= 3:
             g = parts[0]
             a = parts[1]
-            v = parts[len(parts) - 1]
+            v = parts[len(parts) -1]
             t = None
             c = None
             if len(parts) == 4:
@@ -149,7 +151,7 @@ def main():
       )
 
     if out.find("fatal:") != -1 or out.find("error:") != -1:
-        module.fail_json(msg=out)
+      module.fail_json(msg=out)
 
     if err.find("fatal:") != -1 or err.find("error:") != -1:
       module.fail_json(msg=err)
@@ -157,30 +159,34 @@ def main():
   # Set enabled status
   run_command("app conf set app.enabled %s"%app_enabled.lower(), module, cwd=app_path)
 
-  # Get installed version
-  version = get_config_value("app.version", module, app_path)
-  maven_repo = get_config_value("maven.repo", module, app_path)
+  if app_exists:
+    # Get installed version
+    version = get_config_value("app.version", module, app_path)
+    maven_repo = get_config_value("maven.repo", module, app_path)
 
-  if (maven_repo != maven_repository):
-    # Set maven repo
-    run_command("app conf set maven.repo %s" % maven_repository, module, cwd=app_path)
+    if (maven_repo != maven_repository):
+      # Set maven repo
+      run_command("app conf set maven.repo %s" % maven_repository, module, cwd=app_path)
 
-  if version != artifact.version:
-    # Set version
-    run_command("app conf set app.version %s" % artifact.version, module, cwd=app_path)
+    if version != artifact.version:
+      # Set version
+      run_command("app conf set app.version %s" % artifact.version, module, cwd=app_path)
 
-  if app_exists and upgrade:
-    # Upgrade app
-    rc, out, err = run_command("app upgrade", module, cwd=app_path)
+    if upgrade:
+      # Upgrade app
+      rc, out, err = run_command("app upgrade", module, cwd=app_path)
 
-    if out.find("fatal:") != -1 or out.find("error:") != -1:
-      module.fail_json(msg=out)
+      if out.find("fatal:") != -1 or out.find("error:") != -1:
+        module.fail_json(msg=out)
 
-    if err.find("fatal:") != -1 or err.find("error:") != -1:
-      module.fail_json(msg=err)
+      if err.find("fatal:") != -1 or err.find("error:") != -1:
+        module.fail_json(msg=err)
+
+      if out.find("Artifact already downloaded") != -1:
+        module.exit_json(changed=False)
 
   # Fix ownership of application
-  run_command("chown -R %s:%s %s"%(user,group,app_path), module)
+  #run_command("chown -R %s:%s %s"%(user,group,app_path), module)
 
   module.exit_json(changed=True)
 
