@@ -15,29 +15,39 @@ Role Variables
 
 ```
 ec2_enabled:
-  There is an optional dependency on ec2, which may be enabled by setting the 'ec2_enabled' variable to "true".
-  The optional dependency on ec2 is for enabling stackdriver, to publish the artifact being installed.
-  stackdriver requires an api key, which should be sent in the "stackdriver_api_key" variable.
+  Flag for enabling collection of ec2_facts.
+
+stackdriver_api_key:
+  Enables stackdriver, to publish the artifact being installed.
 
 app:
   This is an object which MUST be filled out with the following keys.
 
   name: 
-    Directory name which the application will be installed under. Should not contain spaces.
+    Directory name which the application will be installed under. 
+    Should not contain spaces.
+
   groupId: 
     Maven group Id
+
   artifactId: 
     Maven artifactId
+
   classifier: 
     Maven classifier (defaults to 'appmgr'). May be set to '' to have no classifier
+
   version: 
     Maven version
+
   enabled:
     If the application should be enabled or not.
+
   config: 
     List of name value pairs of configuration that will be sent to 'app conf'.
+
   environment: 
-    List of name/value pairs that will be entered into '{{app_home}}/{{app.name}}/environment'
+    List of name/value pairs that will be entered into 
+    '{{app_home}}/{{app.name}}/environment'.
     This file should be sourced by the launcher script of the app.
 
 
@@ -75,5 +85,5 @@ MIT
 Author Information
 ------------------
 
-Erlend Hamnaberg (github.com/hamnis, twitter.com/hamnis)
-Jordi Arnavat (github.com/acjzz, twitter.com/acjzz)
+* Erlend Hamnaberg (github.com/hamnis, twitter.com/hamnis)
+* Jordi Arnavat (github.com/acjzz, twitter.com/acjzz)
