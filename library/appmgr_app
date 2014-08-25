@@ -119,7 +119,7 @@ def main():
   )
 
   # Check if appsh is installed:
-  rcapp, outapp, errapp = run_command("app", module)
+  rcapp, outapp, errapp = run_command("which app", module)
 
   if rcapp != 0:
     module.fail_json(msg="appmgr is not installed, or has not been put on PATH. Please do so.")
