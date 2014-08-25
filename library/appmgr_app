@@ -122,7 +122,7 @@ def main():
   rcapp, outapp, errapp = run_command("app", module)
 
   if rcapp != 0:
-    module.fail_json("appmgr is not installed, or has not been put on PATH. Please do so.")
+    module.fail_json(msg="appmgr is not installed, or has not been put on PATH. Please do so.")
 
   app_name = module.params["name"]
   app_enabled = module.params["enabled"]
