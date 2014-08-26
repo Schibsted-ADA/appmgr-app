@@ -1,11 +1,12 @@
 ---
 dependencies:
-  - {role: Schibsted.monit}
+  - {role: schibsted.monit}
 galaxy_info:
   author: Erlend Hamnaberg, Jordi Arnavat
   company: Schibsted ASA
+  description: install appmgr applications
   license: MIT
-  min_ansible_version: 1.4
+  min_ansible_version: 1.6
   platforms:
     - name: GenericLinux
       versions:
