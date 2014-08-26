@@ -1,3 +1,15 @@
 ---
 dependencies:
   - {role: Schibsted.monit}
+galaxy_info:
+  author: Erlend Hamnaberg, Jordi Arnavat
+  company: Schibsted ASA
+  license: MIT
+  min_ansible_version: 1.4
+  platforms:
+    - name: GenericLinux
+      versions:
+       - all
+  categories:
+    - system
+    - packaging
