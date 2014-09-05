@@ -11,8 +11,6 @@
   appmgr_app: upgrade={{upgrade}} coordinates={{app_coordinates}} name={{app.name}} maven_repository={{maven_repository}} user={{app_user}} group={{app_group}} base={{app_home}}
   sudo: yes
   sudo_user: "{{app_user}}"
-  notify:
-    - "restart app {{app.name}}"
 
 - name: "Configuring app {{app.name}}"
   appmgr_config: name={{app.name}} key={{item.name}} value={{item.value}}
@@ -31,5 +29,10 @@
 - name: "Restart monit"
   service: name=monit state=restarted
   sudo: yes
+
+- name: "restart app {{app.name}}" 
+  shell: "cd {{app_home}}/{{app.name}} && app restart"
+  sudo: yes
+  sudo_user: "{{app_user}}"
 
 - include: ec2.yml
