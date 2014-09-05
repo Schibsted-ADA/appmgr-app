@@ -1,4 +1,5 @@
 ---
 - name: "restart app {{app.name}}" 
-  command: "monit restart {{app.name}}"
+  shell: "cd {{app_home}}/{{app.name}} && app restart"
   sudo: yes
+  sudo_user: "{{app_user}}"

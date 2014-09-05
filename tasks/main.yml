@@ -1,9 +1,9 @@
 ---
-- name: "Create '{{app_user}}' group"
+- name: "Create {{app_user}} group"
   sudo: yes
   group: name={{app_user}} system=yes
 
-- name: "Create '{{app_user}}' user"
+- name: "Create {{app_user}} user"
   sudo: yes
   user: name={{app_user}} system=yes group=app shell=/usr/sbin/nologin home={{app_home}} createhome=yes
 
@@ -17,6 +17,7 @@
 - name: "Configuring app {{app.name}}"
   appmgr_config: name={{app.name}} key={{item.name}} value={{item.value}}
   with_items: app.config
+  sudo_user: "{{app_user}}"
   sudo: yes
 
 - name: "Handling environment variables"

@@ -40,8 +40,6 @@ def main():
       argument_spec = dict(
         name   = dict(required=True),
         base   = dict(required=False,default="/opt/apps"),
-        user   = dict(required=False,default="app"),
-        group  = dict(required=False,default="app"),
         key    = dict(required=False),
       	value  = dict(default=True)
       )
@@ -52,8 +50,6 @@ def main():
 
   app_name = module.params["name"]
   app_path = os.path.join(module.params["base"], app_name)
-  user  = module.params["user"]
-  group  = module.params["group"]
   key = module.params["key"]
   value  = module.params["value"]
 
@@ -69,7 +65,7 @@ def main():
   rc, out, err = run_command("app conf set %s %s"%(key,value), module, cwd=app_path)
   
   # Fix ownership of application
-  run_command("chown -R %s:%s %s"%(user,group,app_path), module)
+  #run_command("chown -R %s:%s %s"%(user,group,app_path), module)
 
   if rc == 0:
     module.exit_json(changed=True)
