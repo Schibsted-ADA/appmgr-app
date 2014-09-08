@@ -31,7 +31,7 @@
   sudo: yes
 
 - name: "restart app {{app.name}}" 
-  shell: "cd {{app_home}}/{{app.name}} && app restart"
+  command: "app restart chdir={{app_home}}/{{app.name}}"
   sudo: yes
   sudo_user: "{{app_user}}"
 
