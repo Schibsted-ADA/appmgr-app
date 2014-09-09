@@ -1,7 +1,7 @@
-check process {{app.name}} with pidfile /opt/apps/{{app.name}}/.app/pid
-  start program "/bin/bash -c 'sleep 5 && cd /opt/apps/{{app.name}} && /usr/local/bin/app start'"
+check process {{app.name}} with pidfile {{app_home}}/{{app.name}}/.app/pid
+  start program "/bin/bash -c 'sleep 5 && cd {{app_home}}/{{app.name}} && {{app_binary}} start'"
     as uid {{app_user}} and gid {{app_group}}
-  stop program "/bin/bash -c 'cd /opt/apps/{{app.name}} && /usr/local/bin/app stop'"
+  stop program "/bin/bash -c 'cd {{app_home}}/{{app.name}} && {{app_binary}} stop'"
     as uid {{app_user}} and gid {{app_group}}
 
 if 5 restarts within 5 cycles then timeout
