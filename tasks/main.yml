@@ -1,11 +1,5 @@
 ---
-- name: "Create {{app_user}} group"
-  sudo: yes
-  group: name={{app_user}} system=yes
-
-- name: "Create {{app_user}} user"
-  sudo: yes
-  user: name={{app_user}} system=yes group=app shell=/usr/sbin/nologin home={{app_home}} createhome=yes
+- include: user.yml
 
 - name: "Installing app {{app.name}}" 
   appmgr_app: upgrade={{upgrade}} coordinates={{app_coordinates}} name={{app.name}} maven_repository={{maven_repository}} user={{app_user}} group={{app_group}} base={{app_home}}

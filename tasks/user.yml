@@ -1,0 +1,8 @@
+---
+- name: "Create {{app_user}} group"
+  sudo: yes
+  group: name={{app_user}} system=yes
+
+- name: "Create {{app_user}} user"
+  sudo: yes
+  user: name={{app_user}} system=yes group=app shell=/usr/sbin/nologin home={{app_home}} createhome=yes
