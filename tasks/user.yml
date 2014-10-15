@@ -6,3 +6,8 @@
 - name: "Create {{app_user}} user"
   sudo: yes
   user: name={{app_user}} system=yes group=app shell=/usr/sbin/nologin home={{app_home}} createhome=yes
+
+- name: Create .netrc file
+  copy: file={{netrc_file}} dest={{app_home}}/.netrc owner={{app_user}} group={{app_user}} mode=0600
+  sudo: yes
+  when: netrc_file is defined
