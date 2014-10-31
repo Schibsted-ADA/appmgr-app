@@ -1,7 +1,5 @@
 check process {{app.name}} with pidfile {{app_home}}/{{app.name}}/.app/pid
-  start program "{{app_binary}} -C {{app_home}}/{{app.name}} start"
-    as uid {{app_user}} and gid {{app_group}}
-  stop program "{{app_binary}} -C {{app_home}}/{{app.name}} stop"
-    as uid {{app_user}} and gid {{app_group}}
+  start program "/usr/bin/sudo -u {{app_user}} {{app_binary}} -C {{app_home}}/{{app.name}} start"
+  stop program "/usr/bin/sudo -u {{app_user}} {{app_binary}} -C {{app_home}}/{{app.name}} stop"
 
 if 5 restarts within 5 cycles then timeout
