@@ -1,7 +1,7 @@
 check process {{app.name}} with pidfile {{app_home}}/{{app.name}}/.app/pid
-  start program "{{app_binary}} -C {{app_home}}/{{app.name}} start'"
+  start program "{{app_binary}} -C {{app_home}}/{{app.name}} start"
     as uid {{app_user}} and gid {{app_group}}
-  stop program "{{app_binary}} -C {{app_home}}/{{app.name}} stop'"
+  stop program "{{app_binary}} -C {{app_home}}/{{app.name}} stop"
     as uid {{app_user}} and gid {{app_group}}
 
 if 5 restarts within 5 cycles then timeout
