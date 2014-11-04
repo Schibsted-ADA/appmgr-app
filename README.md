@@ -70,7 +70,9 @@ app_home:
 
 Dependencies
 ------------
-- Schibsted.monit
+- None
+
+This role will install an upstart job, which may be run with the service module.
 
 Example Playbook
 -------------------------

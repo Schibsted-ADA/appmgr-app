@@ -1,4 +1,4 @@
 ---
 - name: "restart app {{app.name}}" 
-  command: "monit restart {{app.name}}"
+  service: name=appmgr-{{app.name}} state=restarted
   sudo: yes

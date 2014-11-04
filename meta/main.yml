@@ -1,6 +1,5 @@
 ---
-dependencies:
-  - {role: schibsted.monit}
+dependencies: []
 galaxy_info:
   author: Erlend Hamnaberg, Jordi Arnavat
   company: Schibsted ASA

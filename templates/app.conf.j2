@@ -1,0 +1,21 @@
+# appmgr - {{app.name}}
+#
+
+description "{{app.name}}"
+
+start on filesystem and started networking
+stop on shutdown
+
+respawn
+respawn limit 10 5
+
+setuid {{app_user}}
+setgid {{app_group}}
+
+pre-start script
+  exec {{app_binary}} -C {{app_install_dir}} start
+end script
+
+post-stop script
+  exec {{app_binary}} -C {{app_install_dir}} stop
+end script

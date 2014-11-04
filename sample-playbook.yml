@@ -2,7 +2,7 @@
 host: all
 roles:
   - {
-      role: "Schibsted.appmgr-app",
+      role: "schibsted.appmgr-app",
       app: {
         name: "foobar",
         groupId: "com.example",

@@ -6,3 +6,4 @@ app_user: app
 app_group: app
 app_home: /opt/apps
 app_binary: /usr/bin/app
+app_install_dir: "{{app_home}}/{{app.name}}"

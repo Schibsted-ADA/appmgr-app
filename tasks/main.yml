@@ -12,20 +12,26 @@
   appmgr_config: name={{app.name}} key={{item.name}} value={{item.value}}
   with_items: app.config
   sudo_user: "{{app_user}}"
+  when: app.config is defined
   sudo: yes
 
 - name: "Handling environment variables"
   template: src=environment.j2 dest=/opt/apps/{{app.name}}/environment
+  when: app.environment is defined
   sudo: yes
 
-- name: "Install app :: Add monit scripts"
-  template: src=monit/conf.d/app.j2 dest=/etc/monit/conf.d/{{app.name}} owner=root group=root mode=0700
-  register: app_install
+- name: Install init script
+  template: src=skeleton.j2 dest=/etc/init.d/appmgr-{{app.name}} mode=0755 owner=root group=root
   sudo: yes
+  when: ansible_distribution == "Debian"
 
-- name: "Restart monit"
-  service: name=monit state=restarted
-  when: app_install.changed
+- name: Install init script
+  template: src=app.conf.j2 dest=/etc/init/appmgr-{{app.name}}.conf owner={{app_user}} group={{app_group}}
+  sudo: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: "Enable application {{app.name}}"
+  service: name=appmgr-{{app.name}} enabled=yes
   sudo: yes
 
 - include: ec2.yml
