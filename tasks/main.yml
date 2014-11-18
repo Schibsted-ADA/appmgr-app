@@ -21,17 +21,17 @@
   sudo: yes
 
 - name: Install init script
-  template: src=skeleton.j2 dest=/etc/init.d/appmgr-{{app.name}} mode=0755 owner=root group=root
+  template: src=skeleton.j2 dest=/etc/init.d/{{app_init_prefix}}{{app.name}} mode=0755 owner=root group=root
   sudo: yes
   when: ansible_distribution == "Debian"
 
 - name: Install init script
-  template: src=app.conf.j2 dest=/etc/init/appmgr-{{app.name}}.conf owner={{app_user}} group={{app_group}}
+  template: src=app.conf.j2 dest=/etc/init/{{app_init_prefix}}{{app.name}}.conf owner={{app_user}} group={{app_group}}
   sudo: yes
   when: ansible_distribution == "Ubuntu"
 
 - name: "Enable application {{app.name}}"
-  service: name=appmgr-{{app.name}} enabled=yes
+  service: name={{app_init_prefix}}{{app.name}} enabled=yes
   sudo: yes
 
 - include: ec2.yml

@@ -7,3 +7,5 @@ app_group: app
 app_home: /opt/apps
 app_binary: /usr/bin/app
 app_install_dir: "{{app_home}}/{{app.name}}"
+app_init_prefix: "appmgr-"
+app_user_manage: true

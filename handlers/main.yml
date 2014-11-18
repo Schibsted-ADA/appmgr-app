@@ -1,4 +1,4 @@
 ---
 - name: "restart app {{app.name}}" 
-  service: name=appmgr-{{app.name}} state=restarted
+  service: name={{app_init_prefix}}{{app.name}} state=restarted
   sudo: yes
