@@ -9,7 +9,7 @@
     - "restart app {{app.name}}"
 
 - name: "Configuring app {{app.name}}"
-  appmgr_config: name={{app.name}} key={{item.name}} value={{item.value}}
+  appmgr_config: name={{app.name}} key={{item.name}} value={{item.value}} base={{app_home}}
   with_items: app.config
   sudo_user: "{{app_user}}"
   when: app.config is defined
