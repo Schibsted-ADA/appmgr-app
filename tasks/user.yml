@@ -1,15 +1,19 @@
 ---
-- name: "Create {{app_user}} group"
+- name: "Create {{app_group}} group"
   sudo: yes
-  group: name={{app_user}} system=yes
+  group: name={{app_group}} system=yes
   when: app_user_manage
 
 - name: "Create {{app_user}} user"
   sudo: yes
-  user: name={{app_user}} system=yes group=app shell=/usr/sbin/nologin home={{app_home}} createhome=yes
+  user: name={{app_user}} system=yes group={{app_group}} shell=/usr/sbin/nologin home={{app_home}} createhome=no
   when: app_user_manage
 
+- name: "Create {{app_home}} directory"
+  sudo: yes
+  file: path={{app_home}} state=directory recurse=yes group={{app_group}} owner={{app_user}}
+
 - name: Create .netrc file
-  copy: src={{netrc_file}} dest={{app_home}}/.netrc owner={{app_user}} group={{app_user}} mode=0600
+  copy: src={{netrc_file}} dest={{app_home}}/.netrc owner={{app_user}} group={{app_group}} mode=0600
   sudo: yes
   when: netrc_file is defined
