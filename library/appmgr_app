@@ -137,7 +137,7 @@ def main():
     module.fail_json(
       msg="Error parsing app_coordinates: %s"%module.params["app_coordinates"]
     )
-  
+
   # Check for installed app
   app_exists = os.path.exists(os.path.join(app_path, ".app"))
 
@@ -145,7 +145,7 @@ def main():
     # Install app
     rc, out, err = run_command("app init -d %s maven -r %s %s"%(app_path,maven_repository,artifact), module)
 
-    if err.find("Unable to download") != -1:
+    if err.find("Unable to download") != -1 or out.find("Unable to download") != -1:
       module.fail_json(
         msg="Unable to download %s [%s], from maven repository: %s"%(app_name, artifact ,maven_repository)
       )
@@ -155,7 +155,10 @@ def main():
 
     if err.find("fatal:") != -1 or err.find("error:") != -1:
       module.fail_json(msg=err)
-      
+
+  if not os.path.exists(os.path.join(app_path, ".app")):
+    module.fail_json(msg="Unable initialize app out='%s', err='%s' "  % (out, err))
+
   # Set enabled status
   run_command("app conf set app.enabled %s"%app_enabled.lower(), module, cwd=app_path)
 
