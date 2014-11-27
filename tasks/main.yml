@@ -16,7 +16,7 @@
   sudo: yes
 
 - name: "Handling environment variables"
-  template: src=environment.j2 dest=/opt/apps/{{app.name}}/environment
+  template: src=environment.j2 dest={{app_home}}/{{app.name}}/environment
   when: app.environment is defined
   sudo: yes
 
