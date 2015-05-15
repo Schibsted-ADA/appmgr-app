@@ -1,7 +1,6 @@
 ---
 upgrade: true
 app_coordinates: "{{app.groupId}}:{{app.artifactId}}:{{app.classifier | default('appmgr')}}:{{app.version}}"
-ec2_enabled: false
 app_user: app
 app_group: app
 app_home: /opt/apps

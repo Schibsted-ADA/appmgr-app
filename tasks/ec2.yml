@@ -1,8 +1,0 @@
----
-- name: Gather facts
-  action: ec2_facts
-  when: ec2_enabled
-
-- name: "notify stackdriver"
-  stackdriver: key={{ stackdriver_api_key }} event=deploy deployed_to={{inventory_file}} deployed_by={{ansible_ssh_user}} repository={{app.name}} revision_id={{app_coordinates}} instance_id={{ ansible_ec2_instance_id }}
-  when: ec2_enabled and stackdriver_api_key is defined

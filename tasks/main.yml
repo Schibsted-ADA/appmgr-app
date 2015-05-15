@@ -33,5 +33,3 @@
 - name: "Enable application {{app.name}}"
   service: name={{app_init_prefix}}{{app.name}} enabled=yes
   sudo: yes
-
-- include: ec2.yml
