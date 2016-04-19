@@ -1,3 +1,6 @@
+Maintenance have moved to https://github.com/hamnis/appmgr-app
+==============================================================
+
 Schibsted.appmgr-app
 ====================
 A role for installing appmgr applications.
