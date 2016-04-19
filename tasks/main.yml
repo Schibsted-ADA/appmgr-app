@@ -31,5 +31,5 @@
   when: ansible_distribution == "Ubuntu"
 
 - name: "Enable application {{app.name}}"
-  service: name={{app_init_prefix}}{{app.name}} enabled=yes
+  service: name={{app_init_prefix}}{{app.name}} enabled=yes state=restarted
   sudo: yes
